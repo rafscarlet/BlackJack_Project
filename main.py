@@ -13,51 +13,38 @@ dealer_bust=False
 theEnd=False
 another='a'
 
-def calc_score(hand:list,owner):  #owner: Player=0 Dealer=1
-    p_bj=False
-    d_bj=False
-    p_b=False
-    d_b=False
+def calc_score(hand:list): 
+    blackjack=False
+    bust=False
+
+    if hand==[10,11] or hand==[11,10]:    
+        blackjack=True
+    
     score=sum(hand)
+    
     if 11 in hand and score>21:
         hand[hand.index(11)]=1
         score=sum(hand)
-    if hand==[10,11] or hand==[11,10]:
-        if owner==0:
-            p_bj=True
-        elif owner==1:
-            d_bj=True
     if score>21:
-        if owner==0:
-            p_b=True
-        elif owner==1:
-            d_b=True
-    
-    blackjack=p_bj
-    bust=p_b
-    if owner==1:
-        blackjack=d_bj
-        bust=d_b
+        bust=True
 
     return score, blackjack, bust
 
 
 def computer_play(hand:list):
-    d_bj=False
-    d_b=False
     #Computer draws cards as long as his sum is not bigger than 16 (also if sum>21 and he has an ace, the ace counts as 1)
     score=sum(hand)
     while score<=16:
         hand.append(random.choice(cards))
-        score=calc_score(hand,1)[0]
+        score=calc_score(hand)[0]
     return hand 
 
 
 def results(player_cards, dealer_cards):
     #Checks every condition and prints the final result of the game
 
-    player_score, player_blackjack, player_bust = calc_score(my_cards,0)
-    dealer_score, dealer_blackjack, dealer_bust = calc_score(dealer_cards,1)
+    player_score, player_blackjack, player_bust = calc_score(my_cards)
+    dealer_score, dealer_blackjack, dealer_bust = calc_score(dealer_cards)
     print(f'    Your final hand is {player_cards} with a score of {player_score}')
     print(f'    The dealer\'s final hand is {dealer_cards} with a score of {dealer_score}\n')
 
@@ -108,8 +95,8 @@ while not theEnd:
     # # dealer_cards=[11,7]
 
     #check for blackjacks
-    my_score, player_blackjack, player_bust=calc_score(my_cards,0)
-    dealer_score, dealer_blackjack, dealer_bust=calc_score(dealer_cards,1)
+    my_score, player_blackjack, player_bust=calc_score(my_cards)
+    dealer_score, dealer_blackjack, dealer_bust=calc_score(dealer_cards)
 
     if dealer_blackjack or player_blackjack:
         #Game Ends
@@ -118,8 +105,8 @@ while not theEnd:
 
     while hit:
         #demonstrate hand, score and ask if they want another hit
-        my_score, player_blackjack, player_bust = calc_score(my_cards,0)
-        dealer_score, dealer_blackjack, dealer_bust = calc_score(dealer_cards,1)
+        my_score, player_blackjack, player_bust = calc_score(my_cards)
+        dealer_score, dealer_blackjack, dealer_bust = calc_score(dealer_cards)
         print(f'\n    Your cards: {str(my_cards)} - - - Current score: {my_score}')
         print(f'    Dealer\'s first card is: {dealer_cards[0]}')
         moreCards=input('\nWant another card? (Type "h" to hit or "p" to pass) ')
@@ -130,7 +117,7 @@ while not theEnd:
             hit=False 
             #Computer plays
             dealer_cards=computer_play(dealer_cards)
-            dealer_score, dealer_blackjack, dealer_bust=calc_score(dealer_cards,1)
+            dealer_score, dealer_blackjack, dealer_bust=calc_score(dealer_cards)
             #Announce the winner (or draw)
             results(my_cards,dealer_cards)
             
@@ -140,7 +127,7 @@ while not theEnd:
             #New Card
             print('\n-----Here is your new card!-----\n')
             my_cards.append(random.choice(cards))
-            my_score, player_blackjack, player_bust=calc_score(my_cards,0)
+            my_score, player_blackjack, player_bust=calc_score(my_cards)
             
             if my_score>21:
                 hit=False
